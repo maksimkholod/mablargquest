@@ -47,6 +47,7 @@ Database\Classic\classicNpcDB.lua
 Database\Classic\classicObjectDB.lua
 Database\Classic\classicQuestDB.lua
 Database\QuestieDB.lua
+Database\factionDB.lua
 Database\questDB.lua
 Database\objectDB.lua
 Database\npcDB.lua
@@ -82,6 +83,7 @@ Localization\Translations\Translations.xml
 
 Localization\lookups\lookupQuestCategories.lua
 Localization\lookups\lookupZones.lua
+Localization\lookups\Classic\lookupFactions\lookupFactions.xml
 Localization\lookups\Classic\lookupItems\lookupItems.xml
 Localization\lookups\Classic\lookupNpcs\lookupNpcs.xml
 Localization\lookups\Classic\lookupObjects\lookupObjects.xml

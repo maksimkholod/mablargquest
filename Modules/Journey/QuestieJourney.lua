@@ -9,6 +9,8 @@ QuestieJourneyFrame = nil
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
 ---@type QuestieOptions
 local QuestieOptions = QuestieLoader:ImportModule("QuestieOptions")
+---@type FactionDB
+local FactionDB = QuestieLoader:ImportModule("FactionDB")
 ---@type ZoneDB
 local ZoneDB = QuestieLoader:ImportModule("ZoneDB")
 ---@type l10n
@@ -21,6 +23,8 @@ local QuestieCombatQueue = QuestieLoader:ImportModule("QuestieCombatQueue")
 local tinsert = table.insert
 
 QuestieJourney.continents = {}
+QuestieJourney.factionGroups = {}
+QuestieJourney.factions = {}
 QuestieJourney.zones = {}
 QuestieJourney.tabGroup = nil
 
@@ -28,6 +32,7 @@ local AceGUI = LibStub("AceGUI-3.0")
 
 local isWindowShown = false
 _QuestieJourney.lastOpenWindow = "journey"
+_QuestieJourney.lastFactionSelection = {}
 _QuestieJourney.lastZoneSelection = {}
 
 local notesPopupWin
@@ -55,9 +60,31 @@ function QuestieJourney:Initialize()
     end
     coroutine.yield()
     continents[QuestieJourney.questCategoryKeys.CLASS] = QuestiePlayer:GetLocalizedClassName()
-
     coroutine.yield()
+
+    local factionGroups = {}
+    local factionWithoutId = -1
+    for index=1, GetNumFactions() do -- TODO: Remove this as it limits the Journey to only show known factions to the player
+        local name, _, _, _, _, _, _, _, isHeader, _, hasRep, _, _, factionID = GetFactionInfo(index)
+        if factionID then
+            if isHeader then
+                factionGroups[factionID] = l10n(name)
+            end
+        else
+            factionGroups[factionWithoutId] = l10n(name)
+            factionWithoutId = factionWithoutId - 1
+        end
+    end
+
     self.continents = continents
+    self.factionGroups = factionGroups
+    self.factionMap = FactionDB:GetFactionsWithQuests()
+
+    -- TODO Loop over factionMap and use GetFactionInfoByID to grab the required translations
+    -- TODO Delete all faction translations. We still need the IDs though so maybe keep enUS
+
+    self.factions = FactionDB:GetRelevantFactions()
+    self.factionIdToParentIdTable = FactionDB:GetFactionIdToParentIdTable()
     self.zoneMap = ZoneDB:GetZonesWithQuests(true)
     self.zones = ZoneDB:GetRelevantZones()
     coroutine.yield()
@@ -89,6 +116,10 @@ function QuestieJourney:BuildMainFrame()
             {
                 text = l10n('Quests by Zone'),
                 value="zone"
+            },
+            {
+                text = l10n('Quests by Faction'),
+                value="faction"
             },
             {
                 text = l10n('Advanced Search'),

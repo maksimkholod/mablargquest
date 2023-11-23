@@ -212,7 +212,6 @@ function MapIconTooltip:Show()
 
             for _, questData in pairs(quests) do
                 local reputationReward = QuestieDB.QueryQuestSingle(questData.questId, "reputationReward")
-
                 if questData.title ~= nil then
                     local quest = QuestieDB.GetQuest(questData.questId)
                     local rewardString = ""
@@ -257,6 +256,7 @@ function MapIconTooltip:Show()
                     end
 
                     if reputationReward and next(reputationReward) then
+                        local reputationRewardTable = QuestieReputation:GetReputationRewardTable(reputationReward)
                         local rewardTable = {}
                         local factionId, factionName
                         local rewardValue
