@@ -23,7 +23,7 @@ local QuestieMap = QuestieLoader:ImportModule("QuestieMap")
 local QuestieLib = QuestieLoader:ImportModule("QuestieLib")
 ---@type QuestiePlayer
 local QuestiePlayer = QuestieLoader:ImportModule("QuestiePlayer")
----@type QuestieDB
+---@class QuestieDB
 local QuestieDB = QuestieLoader:ImportModule("QuestieDB")
 ---@type Cleanup
 local QuestieCleanup = QuestieLoader:ImportModule("Cleanup")
@@ -134,8 +134,12 @@ end
 QuestieInit.Stages = {}
 
 QuestieInit.Stages[1] = function() -- run as a coroutine
-    Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieInit:Stage1] Starting the real init.")
+    ---@type LibQuestieDB
+    local LibQuestieDB     = LibQuestieDB()
+    QuestieDB.LibQuestieDB = LibQuestieDB
 
+    Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieInit:Stage1] Starting the real init.")
+    QuestieLoader:ImportModule("Profiler"):Start()
     --? This was moved here because the lag that it creates is much less noticable here, while still initalizing correctly.
     Questie:Debug(Questie.DEBUG_CRITICAL, "[QuestieInit:Stage1] Starting QuestieOptions.Initialize Thread.")
     ThreadLib.ThreadSimple(QuestieOptions.Initialize, 0)
@@ -235,7 +239,6 @@ QuestieInit.Stages[2] = function()
     l10n:PostBoot()
     QuestiePlayer:Initialize()
     coYield()
-    QuestieJourney:Initialize()
 
     -- Continue to the next Init Stage once Game Cache's Questlog is good
     while not QuestieValidateGameCache:IsCacheGood() do
