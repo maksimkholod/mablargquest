@@ -173,6 +173,7 @@ end
 ---@param questLogIndex number
 ---@param questId number
 function QuestEventHandler:QuestAccepted(questLogIndex, questId)
+    print("QUEST_ACCEPTED Start", questId)
     Questie:Debug(Questie.DEBUG_DEVELOP, "[Quest Event] QUEST_ACCEPTED", questLogIndex, questId)
 
     if questLog[questId] and questLog[questId].timer then
@@ -200,6 +201,7 @@ function QuestEventHandler:QuestAccepted(questLogIndex, questId)
     _QuestEventHandler:HandleQuestAccepted(questId, false)
 
     Questie:Debug(Questie.DEBUG_DEVELOP, "[Quest Event] QUEST_ACCEPTED - skipNextUQLCEvent - ", skipNextUQLCEvent)
+    print("QUEST_ACCEPTED End", questId)
 end
 
 ---@param questId number
@@ -209,6 +211,7 @@ function _QuestEventHandler:HandleQuestAccepted(questId, isRetry)
     if cacheMiss then
         -- if cacheMiss, no need to check changes as only 1 questId
         Questie:Debug(Questie.DEBUG_INFO, "Objectives are not cached yet")
+        print("Objectives are not cached yet", questId, isRetry)
         if (not isRetry) then
             C_Timer.After(0.5, function()
                 _QuestEventHandler:HandleQuestAccepted(questId, true)
@@ -229,6 +232,10 @@ function _QuestEventHandler:HandleQuestAccepted(questId, isRetry)
         QuestieQuest:SmoothReset()
     else
         QuestieQuest:AcceptQuest(questId)
+
+        if Questie.db.profile.autoaccept and ImmersionFrame and ImmersionFrame:IsShown() then
+            ImmersionFrame:Hide()
+        end
     end
 end
 
@@ -237,6 +244,7 @@ end
 ---@param xpReward number
 ---@param moneyReward number
 function QuestEventHandler:QuestTurnedIn(questId, xpReward, moneyReward)
+    print("QUEST_TURNED_IN Start", questId)
     Questie:Debug(Questie.DEBUG_DEVELOP, "[Quest Event] QUEST_TURNED_IN", xpReward, moneyReward, questId)
 
     if questLog[questId] and questLog[questId].timer then
@@ -278,6 +286,7 @@ function QuestEventHandler:QuestTurnedIn(questId, xpReward, moneyReward)
     QuestieQuest:CompleteQuest(questId)
     QuestieJourney:CompleteQuest(questId)
     QuestieAnnounce:CompletedQuest(questId)
+    print("QUEST_TURNED_IN End", questId)
 end
 
 --- Fires when a quest is removed from the quest log. This includes turning it in and abandoning it.

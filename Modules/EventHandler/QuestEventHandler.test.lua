@@ -204,6 +204,7 @@ describe("QuestEventHandler", function()
         QuestieQuest.UpdateQuest = spy.new(function() end)
         QuestieTracker.Update = spy.new(function() end)
         QuestieTracker.UpdateQuestLines = spy.new(function() end)
+        QuestieTracker.UpdateQuestLines = spy.new()
 
         QuestEventHandler:QuestWatchUpdate(QUEST_ID)
         QuestEventHandler.QuestLogUpdate()
